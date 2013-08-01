@@ -24,7 +24,8 @@ def initialize(*args)
 end
 
 action :remove do
-  search("#{new_resource.data_bag}", "groups:#{new_resource.search_group} AND action:remove") do |rm_user|
+  # Execute for all users, not just sysadmins
+  search("#{new_resource.data_bag}", "action:remove") do |rm_user|
     user rm_user['id'] do
       action :remove
     end
@@ -32,9 +33,11 @@ action :remove do
 end
 
 action :create do
+  
   security_group = Array.new
 
-  search("#{new_resource.data_bag}", "groups:#{new_resource.search_group} NOT action:remove") do |u|
+  # Execute for all users, not just sysadmins
+  search("#{new_resource.data_bag}", "NOT action:remove") do |u|
     security_group << u['id']
 
     if node[:apache] and node[:apache][:allowed_openids]
@@ -75,6 +78,9 @@ action :create do
         supports :manage_home => true
       end
       home home_dir
+      if u['password']
+        password u['password']
+      end
     end
 
     if home_dir != "/dev/null"
