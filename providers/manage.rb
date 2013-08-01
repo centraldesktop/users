@@ -33,7 +33,6 @@ action :remove do
 end
 
 action :create do
-  
   security_group = Array.new
 
   # Execute for all users, not just sysadmins
@@ -104,6 +103,8 @@ action :create do
 
   group "#{new_resource.group_name}" do
     gid new_resource.group_id
-    members security_group
+    search("#{new_resource.data_bag}", "groups:#{new_resource.group_name} AND NOT action:remove") do |u|
+      members.push u['id']
+    end
   end
 end

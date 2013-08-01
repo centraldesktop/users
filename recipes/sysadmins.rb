@@ -17,10 +17,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# Searches data bag "users" for groups attribute "sysadmin".
-# Places returned users in Unix group "sysadmin" with GID 2300.
-users_manage "sysadmin" do
-  group_id 2300
-  action [ :remove, :create ]
+#
+users_manage "admin" do
+  group_id 999
+  action :create
 end
+
+users_manage "sudo" do
+  group_id 27
+  action :create
+end
+
