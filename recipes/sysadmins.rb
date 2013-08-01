@@ -18,6 +18,13 @@
 # limitations under the License.
 #
 #
+#
+#
+package "ruby-shadow" do
+  package_name "libshadow-ruby1.8"
+  action :install
+end
+
 users_manage "admin" do
   group_id 999
   action :create
@@ -27,4 +34,3 @@ users_manage "sudo" do
   group_id 27
   action :create
 end
-
