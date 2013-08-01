@@ -25,7 +25,7 @@ end
 
 action :remove do
   # Execute for all users, not just sysadmins
-  search("#{new_resource.data_bag}", "action:remove") do |rm_user|
+  search(new_resource.data_bag, "action:remove") do |rm_user|
     user rm_user['id'] do
       action :remove
     end
@@ -36,7 +36,7 @@ action :create do
   security_group = Array.new
 
   # Execute for all users, not just sysadmins
-  search("#{new_resource.data_bag}", "NOT action:remove") do |u|
+  search(new_resource.data_bag, "NOT action:remove") do |u|
     security_group << u['id']
 
     if node[:apache] and node[:apache][:allowed_openids]
@@ -101,9 +101,9 @@ action :create do
     end
   end
 
-  group "#{new_resource.group_name}" do
+  group new_resource.group_name do
     gid new_resource.group_id
-    search("#{new_resource.data_bag}", "groups:#{new_resource.group_name} AND NOT action:remove") do |u|
+    search(new_resource.data_bag, "groups:#{new_resource.group_name} AND NOT action:remove") do |u|
       members.push u['id']
     end
   end
