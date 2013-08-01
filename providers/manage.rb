@@ -99,6 +99,16 @@ action :create do
         end
       end
     end
+
+    if u['email']
+      template "#{home_dir}/.forward" do
+        source "forward.erb"
+        owner u['id']
+        group u['gid'] || u['id']
+        mode "0644"
+        variables :email => u['email']
+      end
+    end
   end
 
   group new_resource.group_name do
