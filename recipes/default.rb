@@ -1,9 +1,8 @@
 #
 # Cookbook Name:: users
-# Recipe:: sysadmins
+# Recipe:: default
 #
-# Copyright 2011, Eric G. Wolfe
-# Copyright 2009-2011, Opscode, Inc.
+# Copyright 2009-2012, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,17 +17,4 @@
 # limitations under the License.
 #
 
-package "ruby-shadow" do
-  package_name "libshadow-ruby1.8"
-  action :install
-end
-
-users_manage "admin" do
-  group_id 999
-  action :create
-end
-
-users_manage "sudo" do
-  group_id 27
-  action :create
-end
+# Empty default recipe for including LWRPs.
