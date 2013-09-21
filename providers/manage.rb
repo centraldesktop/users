@@ -82,7 +82,7 @@ action :create do
 
     # Create user object.
     # Do NOT try to manage null home directories.
-      user u['username'] do
+    user u['username'] do
       uid u['uid']
       if u['gid']
         gid u['gid']
@@ -143,15 +143,15 @@ action :create do
           end
         end
       end
-    end
 
-    if u['email']
-      template "#{home_dir}/.forward" do
-        source "forward.erb"
-        owner u['id']
-        group u['gid'] || u['id']
-        mode "0644"
-        variables :email => u['email']
+      if u['email']
+        template "#{home_dir}/.forward" do
+          source "forward.erb"
+          owner u['id']
+          group u['gid'] || u['id']
+          mode "0644"
+          variables :email => u['email']
+        end
       end
     end
   end
