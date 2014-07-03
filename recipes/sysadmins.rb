@@ -19,7 +19,7 @@
 #
 
 package "ruby-shadow" do
-  package_name "libshadow-ruby1.8"
+  package_name node[:platform_version] < "14.00.00" ? "libshadow-ruby1.8" : "ruby-shadow"
   action :install
 end
 
