@@ -3,6 +3,19 @@ users Cookbook CHANGELOG
 This file is used to list changes made in each version of the users cookbook.
 
 
+v1.7.0 (2014-02-14)
+-------------------
+[COOK-4139] - users_manage resource always notifies
+[COOK-4078] - users cookbook fails in why-run mode for .ssh directory
+[COOK-3959] - Add support for Mac OS X to users cookbook
+
+
+v1.6.0
+------
+### Bug
+- **[COOK-3744](https://tickets.opscode.com/browse/COOK-3744)** - Allow passing an action option via the `data_bag` to the user resource
+
+
 v1.5.2
 ------
 ### Bug
