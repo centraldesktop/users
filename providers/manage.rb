@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+use_inline_resources if defined?(use_inline_resources)
+
 def whyrun_supported?
   true
 end
@@ -42,7 +44,6 @@ action :remove do
       user rm_user['username'] ||= rm_user['id'] do
       action :remove
     end
-  end
     new_resource.updated_by_last_action(true)
   end
 end
@@ -63,13 +64,21 @@ action :create do
       end
     end
 
-    # Set home to location in data bag,
-    # or a reasonable default (/home/$user).
-    if u['home']
-      home_dir = u['home']
-    else
-        home_dir = "/home/#{u['username']}"
-    end
+      # Set home_basedir based on platform_family
+      case node['platform_family']
+      when 'mac_os_x'
+        home_basedir = '/Users'
+      when 'debian', 'rhel', 'fedora', 'arch', 'suse', 'freebsd'
+        home_basedir = '/home'
+      end
+
+      # Set home to location in data bag,
+      # or a reasonable default ($home_basedir/$user).
+      if u['home']
+        home_dir = u['home']
+      else
+        home_dir = "#{home_basedir}/#{u['username']}"
+      end
 
     # The user block will fail if the group does not yet exist.
     # See the -g option limitations in man 8 useradd for an explanation.
@@ -90,19 +99,20 @@ action :create do
       shell u['shell']
       comment u['comment']
         password u['password'] if u['password']
-      if home_dir == "/dev/null"
-        supports :manage_home => false
-      else
-        supports :manage_home => true
-      end
-      home home_dir
-      if u['password']
-        password u['password']
+        if home_dir == "/dev/null"
+          supports :manage_home => false
+        else
+          supports :manage_home => true
+        end
+        home home_dir
+        action u['action'] if u['action']
       end
     end
 
-    if home_dir != "/dev/null"
-      directory "#{home_dir}/.ssh" do
+      if manage_home_files?(home_dir, u['username'])
+        Chef::Log.debug("Managing home files for #{u['username']}")
+
+        directory "#{home_dir}/.ssh" do
           owner u['username']
           group u['gid'] || u['username']
         mode "0700"
@@ -142,6 +152,8 @@ action :create do
             variables :public_key => u['ssh_public_key']
           end
         end
+      else
+        Chef::Log.debug("Not managing home files for #{u['username']}")
       end
 
       if u['email']
@@ -164,5 +176,18 @@ action :create do
       members.push u['id']
     end
   end
-  new_resource.updated_by_last_action(true)
+end
+
+private
+
+def manage_home_files?(home_dir, user)
+  # Don't manage home dir if it's NFS mount
+  # and manage_nfs_home_dirs is disabled
+  if home_dir == "/dev/null"
+    false
+  elsif fs_remote?(home_dir)
+    new_resource.manage_nfs_home_dirs ? true : false
+  else
+    true
+  end
 end
