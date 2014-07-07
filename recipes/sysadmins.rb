@@ -18,9 +18,11 @@
 # limitations under the License.
 #
 
-package "ruby-shadow" do
-  package_name node[:platform_version] < "14.00.00" ? "libshadow-ruby1.8" : "ruby-shadow"
-  action :install
+if node['platform_family'] != 'freebsd'
+  package "ruby-shadow" do
+    package_name node[:platform_version] < "14.00.00" ? "libshadow-ruby1.8" : "ruby-shadow"
+    action :install
+  end
 end
 
 users_manage "admin" do
